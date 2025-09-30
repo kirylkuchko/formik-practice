@@ -1,17 +1,52 @@
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Formik, Form, Field, ErrorMessage, useField } from 'formik';
 import * as Yup from 'yup';
 
+const MyTextInput = ({ label, ...props }) => {
+    const [field, meta] = useField(props);
+    return (
+      <>
+        <label htmlFor={props.name}>{label}</label>
+        <input {...field} {...props} />
+        { meta.touched && meta.error ?
+            <div className="error">{meta.error}</div>
+            : null}
+      </>
+    );
+};
+
+const MyCheckbox = ({ children, ...props }) => {
+    const [field, meta] = useField({ ...props, type: 'checkbox' });
+    return (
+      <>
+        <label className="checkbox">
+            <input type="checkbox" {...field} {...props} />
+            {children}
+        </label>
+        { meta.touched && meta.error ?
+            <div className="error">{meta.error}</div>
+            : null}
+      </>
+    );
+};
+
 const CustomForm = () => {
+    const initialValues = {
+        name: '',
+        email: '',
+        amount: 0,
+        currency: '',
+        text: '',
+        terms: false
+    };
+
+    const onSubmit = (values, actions) => {
+        console.log(JSON.stringify(values, null, 2));
+        actions.resetForm();
+    };
+
     return (
         <Formik
-            initialValues = {{
-                name: '',
-                email: '',
-                amount: 0,
-                currency: '',
-                text: '',
-                terms: false
-            }}
+            initialValues = {initialValues}
             validationSchema = {
                 Yup.object({
                     name: Yup.string()
@@ -31,24 +66,24 @@ const CustomForm = () => {
                         .required('Acceptance required').
                         oneOf([true], 'Acceptance required')
             })}
-            onSubmit = {values => console.log(JSON.stringify(values, null, 2))}
+            onSubmit = {onSubmit}
         >
             <Form className="form">
                 <h2>Send a donation</h2>
-                <label htmlFor="name">Your name</label>
-                <Field
+                <MyTextInput
+                    label="Your name"
                     id="name"
                     name="name"
                     type="text"
+                    autoComplete="off"
                 />
-                <ErrorMessage className="error" name="name" component="div"/>
-                <label htmlFor="email">Your email</label>
-                <Field
+                <MyTextInput
+                    label="Your email"
                     id="email"
                     name="email"
                     type="email"
+                    autoComplete="off"
                 />
-                <ErrorMessage className="error" name="email" component="div"/>
                 <label htmlFor="amount">Amount</label>
                 <Field
                     id="amount"
@@ -74,14 +109,9 @@ const CustomForm = () => {
                     as="textarea"
                 />
                 <ErrorMessage className="error" name="text" component="div"/>
-                <label className="checkbox">
-                    <Field 
-                        name="terms" 
-                        type="checkbox" 
-                        />
+                <MyCheckbox name="terms">
                     You agree with privacy policy?
-                </label>
-                <ErrorMessage className="error" name="terms" component="div"/>
+                </MyCheckbox>
                 <button type="submit">Send</button>
             </Form>
         </Formik>
