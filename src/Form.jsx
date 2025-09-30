@@ -46,9 +46,7 @@ const Form = () => {
                 id="name"
                 name="name"
                 type="text"
-                value={formik.values.name}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
+                {...formik.getFieldProps('name')}
             />
             { getErrorMessageElement('name') }
             <label htmlFor="email">Your email</label>
@@ -56,9 +54,7 @@ const Form = () => {
                 id="email"
                 name="email"
                 type="email"
-                value={formik.values.email}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
+                {...formik.getFieldProps('email')}
             />
             { getErrorMessageElement('email') }
             <label htmlFor="amount">Amount</label>
@@ -66,18 +62,14 @@ const Form = () => {
                 id="amount"
                 name="amount"
                 type="number"
-                value={formik.values.amount}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
+                {...formik.getFieldProps('amount')}
             />
             { getErrorMessageElement('amount') }
             <label htmlFor="currency">Currency</label>
             <select
                 id="currency"
                 name="currency"
-                value={formik.values.currency}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}>
+                {...formik.getFieldProps('currency')}>
                     <option value="">Select currency</option>
                     <option value="USD">USD</option>
                     <option value="EUR">EUR</option>
@@ -88,18 +80,14 @@ const Form = () => {
             <textarea 
                 id="text"
                 name="text"
-                value={formik.values.text}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
+                {...formik.getFieldProps('text')}
             />
             { getErrorMessageElement('text') }
             <label className="checkbox">
                 <input 
                     name="terms" 
                     type="checkbox" 
-                    value={formik.values.terms} 
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}/>
+                    {...formik.getFieldProps('terms')}/>
                 You agree with privacy policy?
             </label>
             { getErrorMessageElement('terms') }
