@@ -1,22 +1,5 @@
-import { useFormik } from "formik";
-
-const validate = values => {
-    const errors = {};
-
-    if (!values.name) {
-        errors.name = 'Required'
-    } else if (values.name.length < 2) {
-        errors.name = 'Minimum 2 symbols'
-    }
-
-    if (!values.email) {
-        errors.email = 'Required'
-    } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)) {
-        errors.email = 'Invalid email address'
-    }
-
-    return errors;
-}
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 const Form = () => {
     const formik = useFormik({
@@ -28,9 +11,32 @@ const Form = () => {
             text: '',
             terms: false
         },
-        validate,
+        validationSchema: Yup.object({
+            name: Yup.string()
+                .min(2, 'Minimum 2 symbols')
+                .required('Required'),
+            email: Yup.string()
+                .email('Invalid email address')
+                .required('Required'),
+            amount: Yup.number()
+                .min(5, 'Minimum 5')
+                .required('Required'),
+            currency: Yup.string()
+                .required('Select currency'),
+            text: Yup.string()
+                .min(10, 'Minimum 10 symbols'),
+            terms: Yup.boolean()
+                .required('Acceptance required').
+                oneOf([true], 'Acceptance required')
+        }),
         onSubmit: values => console.log(JSON.stringify(values, null, 2))
     });
+
+    const getErrorMessageElement = (fieldName) => {
+        return formik.touched[fieldName] && formik.errors[fieldName] 
+            ? <div className='error'>{formik.errors[fieldName]}</div> 
+            : null;
+    }
 
     return (
         <form className="form" onSubmit={formik.handleSubmit}>
@@ -44,7 +50,7 @@ const Form = () => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
             />
-            { formik.touched.name && formik.errors.name ? formik.errors.name : null }
+            { getErrorMessageElement('name') }
             <label htmlFor="email">Your email</label>
             <input
                 id="email"
@@ -54,7 +60,7 @@ const Form = () => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
             />
-            { formik.touched.email && formik.errors.email ? formik.errors.email : null}
+            { getErrorMessageElement('email') }
             <label htmlFor="amount">Amount</label>
             <input
                 id="amount"
@@ -64,6 +70,7 @@ const Form = () => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
             />
+            { getErrorMessageElement('amount') }
             <label htmlFor="currency">Currency</label>
             <select
                 id="currency"
@@ -76,6 +83,7 @@ const Form = () => {
                     <option value="EUR">EUR</option>
                     <option value="PLN">PLN</option>
             </select>
+            { getErrorMessageElement('currency') }
             <label htmlFor="text">Your message</label>
             <textarea 
                 id="text"
@@ -84,6 +92,7 @@ const Form = () => {
                 onChange={formik.handleChange}
                 onBlur={formik.handleBlur}
             />
+            { getErrorMessageElement('text') }
             <label className="checkbox">
                 <input 
                     name="terms" 
@@ -93,6 +102,7 @@ const Form = () => {
                     onBlur={formik.handleBlur}/>
                 You agree with privacy policy?
             </label>
+            { getErrorMessageElement('terms') }
             <button type="submit">Send</button>
         </form>
     )
